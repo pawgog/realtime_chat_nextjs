@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import { useParams } from "next/navigation";
+import { formatTimeRemaining } from "@/utils/helper";
 
 const Page = () => {
   const param = useParams();
   const roomId = param?.roomId as string;
   const [copyStatus, setCopyStatus] = useState("COPY");
+  const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
 
   const copyLink = () => {
     const url = window.location.href;
@@ -33,7 +35,29 @@ const Page = () => {
               </button>
             </div>
           </div>
+          <div className="h-8 w-px bg-zinc-800" />
+          <div className="flex flex-col">
+            <span className="text-xs text-zinc-500 uppercase">
+              Self-Destruct
+            </span>
+            <span
+              className={`text-sm font-bold flex items-center gap-2 ${
+                timeRemaining !== null && timeRemaining < 60
+                  ? "text-red-500"
+                  : "text-amber-500"
+              }`}
+            >
+              {timeRemaining !== null
+                ? formatTimeRemaining(timeRemaining)
+                : "--:--"}
+            </span>
+          </div>
         </div>
+
+        <button className="text-xs bg-zinc-800 hover:bg-red-600 px-3 py-1.5 rounded text-zinc-400 hover:text-white font-bold transition-all group flex items-center gap-2 disabled:opacity-50">
+          <span className="group-hover:animate-pulse">💣</span>
+          DESTROY NOW
+        </button>
       </header>
     </main>
   );
