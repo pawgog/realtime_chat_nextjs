@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import { formatTimeRemaining } from "@/utils/helper";
 
@@ -9,6 +9,8 @@ const Page = () => {
   const roomId = param?.roomId as string;
   const [copyStatus, setCopyStatus] = useState("COPY");
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
+  const [input, setInput] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const copyLink = () => {
     const url = window.location.href;
@@ -69,6 +71,15 @@ const Page = () => {
               <input
                 autoFocus
                 type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && input.trim()) {
+                    // Send Message
+                    inputRef.current?.focus();
+                  }
+                }}
+                ref={inputRef}
                 placeholder="Type message..."
                 className="w-full bg-black border border-zinc-800 focus:border-zinc-700 focus:outline-none transition-colors text-zinc-100 placeholder:text-zinc-700 py-3 pl-8 pr-4 text-sm"
               />
