@@ -2,6 +2,10 @@
 
 import { useRef, useState } from "react";
 import { useParams } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import { useUsername } from "@/hooks/use-username";
+
+import { client } from "@/lib/client";
 import { formatTimeRemaining } from "@/utils/helper";
 
 const Page = () => {
@@ -11,6 +15,18 @@ const Page = () => {
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
   const [input, setInput] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const { username } = useUsername();
+
+  const { mutate: sendMessage, isPending } = useMutation({
+    mutationFn: async ({ text }: { text: string }) => {
+      await client.messages.post(
+        { sender: username, text },
+        { query: { roomId } },
+      );
+
+      setInput("");
+    },
+  });
 
   const copyLink = () => {
     const url = window.location.href;
