@@ -66,9 +66,9 @@ const messages = new Elysia({ prefix: "/messages" })
       const messages = await redis.lrange<Message>(`messages:${auth.roomId}`, 0, -1)
 
       return {
-        messages: messages.map((m) => ({
-          ...m,
-          token: m.token === auth.token ? auth.token : undefined,
+        messages: messages.map((message) => ({
+          ...message,
+          token: message.token === auth.token ? auth.token : undefined,
         })),
       }
     },
