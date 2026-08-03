@@ -4,9 +4,11 @@ import { useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useUsername } from "@/hooks/use-username";
+import { format } from "date-fns";
 
 import { client } from "@/lib/client";
 import { formatTimeRemaining } from "@/utils/helper";
+import { useRealtime } from "@/lib/realtime-client";
 
 const Page = () => {
   const param = useParams();
@@ -33,6 +35,16 @@ const Page = () => {
       );
 
       setInput("");
+    },
+  });
+
+  useRealtime({
+    channels: [roomId],
+    events: ["chat.message", "chat.destroy"],
+    onData: ({ event }) => {
+      if (event === "chat.message") {
+        refetch();
+      }
     },
   });
 
@@ -104,6 +116,9 @@ const Page = () => {
                   }`}
                 >
                   {msg.sender === username ? "YOU" : msg.sender}
+                </span>
+                <span className="text-[10px] text-zinc-600">
+                  {format(msg.timestamp, "HH:mm")}
                 </span>
               </div>
 
