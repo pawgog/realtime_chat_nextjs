@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useUsername } from "@/hooks/use-username";
 import { format } from "date-fns";
@@ -18,6 +18,7 @@ const Page = () => {
   const [input, setInput] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const { username } = useUsername();
+  const router = useRouter();
 
   const { data: messages, refetch } = useQuery({
     queryKey: ["messages", roomId],
@@ -44,6 +45,9 @@ const Page = () => {
     onData: ({ event }) => {
       if (event === "chat.message") {
         refetch();
+      }
+      if (event === "chat.destroy") {
+        router.push("/?destroyed=true");
       }
     },
   });
