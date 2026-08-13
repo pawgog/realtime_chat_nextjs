@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useUsername } from "@/hooks/use-username";
@@ -19,6 +19,21 @@ const Page = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { username } = useUsername();
   const router = useRouter();
+
+  const { data: ttlData } = useQuery({
+    queryKey: ["ttl", roomId],
+    queryFn: async () => {
+      const res = await client.room.ttl.get({ query: { roomId } });
+      return res.data;
+    },
+  });
+
+  useEffect(() => {
+    if (ttlData?.ttl !== undefined) {
+      const id = setTimeout(() => setTimeRemaining(ttlData.ttl), 0);
+      return () => clearTimeout(id);
+    }
+  }, [ttlData]);
 
   const { data: messages, refetch } = useQuery({
     queryKey: ["messages", roomId],
